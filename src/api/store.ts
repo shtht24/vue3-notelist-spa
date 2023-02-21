@@ -9,19 +9,34 @@ export const store = reactive({
       "todos": [
         {
           "id": "todo-1000",
-          "title": "delectus aut autem",
+          "title": "sepellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas",
           "completed": false
         },
         {
           "id": "todo-1004",
           "title": "quis ut nam facilis et officia qui",
+          "completed": true
+        },
+        {
+          "id": "todo-1010",
+          "title": "lorem ipsum dolor sit amet, consectetur adipiscing elit",
           "completed": false
         },
         {
-          "id": "todo-1005",
-          "title": "fugiat veniam minus",
+          "id": "todo-1077",
+          "title": "fugiat veniam minus 1", 
           "completed": false
-        }
+        },
+        {
+          "id": "todo-1205",
+          "title": "et netus et malesuada fames ac turpis egestas",
+          "completed": true
+        },
+        {
+          "id": "todo-1065",
+          "title": "asperiores ea ipsam voluptatibus modi minima quia sint",
+          "completed": false
+        },
       ]
     },
     {

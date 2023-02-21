@@ -3,57 +3,108 @@
     <h1>NoteList</h1>
 
     <div class="input-container">
-      <input type="text" v-model="newNoteTitle" class="form-control">
-      <button type="button" class="btn btn-primary" @click="addNote">Add note</button>
+      <input
+        type="text"
+        class="form-control"
+        v-model="newNoteTitle"
+      >
+      <button
+        type="button"
+        class="btn btn-primary"
+        @click="addNote"
+      >
+        Add note
+      </button>
     </div>
 
-    <div v-bind:key="note.id" v-for="note in store.notes">
-      <confirm 
-          v-if="confimingNoteId === note.id" 
-          :id="note.id" 
-          @confirmDelete="deleteNote(note.id)" 
-          @cancelDelete="toConfirm('no_id')"
-        />
-    <div v-else class="note-container">
-      <div class="header-container">
-        <h2>{{ note.title }}</h2>
-        <div class="button-container">
-          <button class="btn btn-danger" @click="toConfirm(note.id)">Delete note</button>
-          <button class="btn btn-secondary" @click="$router.push('/' + note.id)">Edit note</button>
+    <div
+      v-for="note in store.notes"
+      :key="note.id"
+    >
+      <ConfirmWindow
+        v-if="confimingNoteId === note.id"
+        :id="note.id"
+        @confirmDelete="deleteNote(note.id)"
+        @cancelDelete="toConfirm('no_id')"
+      />
+      <div
+        v-else
+        class="note-container"
+      >
+        <div class="header-container">
+          <h2>{{ note.title }}</h2>
+          <div class="button-container">
+            <button
+              class="btn btn-danger"
+              @click="toConfirm(note.id)"
+            >
+              Delete note
+            </button>
+            <button
+              class="btn btn-secondary"
+              @click="$router.push('/' + note.id)"
+            >
+              Edit note
+            </button>
+          </div>
         </div>
-    </div>
-      <div v-if="note.todos.length > 0">
-        <div v-bind:key="todo.id" v-for="todo in note.todos">
-          <img 
-            src="../icons/check-circle-fill.svg"
-            alt="completed"
-            v-if="todo.completed" 
+
+        
+        <div v-if="note.todos.length > 3">
+          <div
+            v-for="todo in note.todos.slice(0, 3)"
+            :key="todo.id"
           >
-          <img 
-            src="../icons/record-circle-fill.svg"
-            alt="incompleted"
-            v-else
-          >
-          {{ todo.title }}
+            <img
+              src="../icons/check-circle-fill.svg"
+              alt="completed"
+              v-if="todo.completed"
+            >
+            <img
+              src="../icons/record-circle-fill.svg"
+              alt="incompleted"
+              v-else
+            >
+            {{ todo.title }}
+          </div>
+          <div class="text-container">and {{note.todos.length - 3}} more...</div>
         </div>
+
+        <div v-else-if="note.todos.length > 0">
+          <div
+            v-for="todo in note.todos"
+            :key="todo.id"
+          >
+            <img
+              src="../icons/check-circle-fill.svg"
+              alt="completed"
+              v-if="todo.completed"
+            >
+            <img
+              src="../icons/record-circle-fill.svg"
+              alt="incompleted"
+              v-else
+            >
+            {{ todo.title }}
+          </div>
+        </div>
+
+        <p v-else>No todos</p>
       </div>
-      <p v-else>No todos</p>
     </div>
-    </div> 
-    </div>
-  
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
 import type { Note } from '../types/Note';
 import { store } from '../api/store.js';
-import Confirm from './Confirm.vue';
+import ConfirmWindow from './ConfirmWindow.vue';
 
 export default defineComponent({
   name: 'NoteList',
   components: {
-    Confirm,
+    ConfirmWindow,
   },
   setup() {
     const newNoteTitle = ref('');
@@ -65,7 +116,11 @@ export default defineComponent({
         title: newNoteTitle.value,
         todos: [],
       };
-      store.notes.push(newNote);
+
+      if (newNoteTitle.value !== '') {
+        store.notes.push(newNote);
+      }
+      
       newNoteTitle.value = '';
     };
 
