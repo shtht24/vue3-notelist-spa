@@ -1,11 +1,13 @@
 <template>
   <div class="container-md">
-    <router-link to="/" type="button" class="btn btn-primary"> Go home </router-link>
+    <router-link to="/" type="button" class="btn btn-primary">Go home</router-link>
+
     <div class="header-container">
-      <h1> {{ currentNote.title }}</h1>
+      <h1>{{ currentNote.title }}</h1>
+
       <div class="button-container">
         <button class="btn btn-success" @click="saveNote">Save note</button>
-        <button class="btn btn-danger" @click="discardNote">Discard note</button>
+        <button class="btn btn-danger" @click="cancelChanges">Cancel changes</button>
       </div>
     </div>
 
@@ -18,36 +20,41 @@
       <div v-if="currentNote.todos.length === 0">
         <h2>No todos</h2>
       </div>
+
       <div v-else>
         <h2>Todos</h2>
-        
-        <div :key="todo.id" v-for="todo in currentNote.todos">
-          <confirm 
-            v-if="confimingTodoId === todo.id" 
-            :id="todo.id" 
-            @confirmDelete="deleteTodo" 
+
+        <div v-for="todo in currentNote.todos" :key="todo.id">
+          <ConfirmWindow
+            v-if="confimingTodoId === todo.id"
+            :id="todo.id"
+            @confirmDelete="deleteTodo"
             @cancelDelete="toConfirm('no_id')"
           />
+
           <div v-else class="todo-container">
-          <img 
-            src="../icons/check-circle-fill.svg"
-            alt="completed"
-            v-if="todo.completed" 
-            @click="changeStatus(todo.id)"
-          >
-          <img 
-            src="../icons/record-circle-fill.svg"
-            alt="incompleted"
-            v-else
-            @click="changeStatus(todo.id)"
-          >
-          <img
-            src="../icons/x-circle-fill.svg"
-            alt="delete"
-            @click="toConfirm(todo.id)"
-          >
-          <div class="text-container">{{ todo.title }}</div>
-        </div>
+            <img
+              src="../icons/check-circle-fill.svg"
+              alt="completed"
+              v-if="todo.completed"
+              @click="changeStatus(todo.id)"
+            />
+
+            <img
+              src="../icons/record-circle-fill.svg"
+              alt="incompleted"
+              v-else
+              @click="changeStatus(todo.id)"
+            />
+
+            <img
+              src="../icons/trash3-fill.svg"
+              alt="delete"
+              @click="toConfirm(todo.id)"
+            />
+
+            <div class="text-container">{{ todo.title }}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -60,12 +67,12 @@ import type { Note } from '../types/Note';
 import { store } from '../api/store.js';
 import { useRoute, useRouter } from 'vue-router';
 import type { Todo } from '../types/Todo';
-import Confirm from './Confirm.vue';
+import ConfirmWindow from './ConfirmWindow.vue';
 
 export default defineComponent({
-  name: 'Note',
+  name: 'NotePage',
   components: {
-    Confirm,
+    ConfirmWindow,
   },
   setup() {
     const route = useRoute();
@@ -73,7 +80,7 @@ export default defineComponent({
     const confimingTodoId = ref('no_id');
     const router = useRouter();
     const currentNoteIndex = store.notes.findIndex((note: Note) => note.id === route.params.id);
-    let currentNote = {...store.notes[currentNoteIndex], todos: [...store.notes[currentNoteIndex].todos]};
+    const currentNote = {...store.notes[currentNoteIndex], todos: [...store.notes[currentNoteIndex].todos]};
     const currentNoteCopy = {...store.notes[currentNoteIndex], todos: [...store.notes[currentNoteIndex].todos]};
 
 
@@ -84,7 +91,10 @@ export default defineComponent({
         completed: false,
       };
 
-      currentNote.todos.push(newTodo);
+      if (newToDoTitle.value !== '') {
+        currentNote.todos.push(newTodo);
+      }
+
       newToDoTitle.value = '';
     };
 
@@ -94,9 +104,6 @@ export default defineComponent({
     };
 
     const changeStatus = (todoId: string) => {
-      // const todoIndex = currentNote.todos.findIndex((todo: Todo) => todo.id === todoId);
-      // currentNote.todos[todoIndex].completed = !currentNote.todos[todoIndex].completed; 
-
       const searchedTodo = currentNote.todos.find((todo: Todo) => todo.id === todoId);
       if (searchedTodo) {
         searchedTodo.completed = !searchedTodo.completed;
@@ -108,7 +115,7 @@ export default defineComponent({
       router.push('/');
     };
 
-    const discardNote = () => {
+    const cancelChanges = () => {
       currentNote.todos = [...currentNoteCopy.todos];
       router.push('/');
     };
@@ -124,7 +131,7 @@ export default defineComponent({
       addTodo,
       deleteTodo,
       saveNote,
-      discardNote,
+      cancelChanges,
       changeStatus,
       toConfirm,
     };

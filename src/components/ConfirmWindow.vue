@@ -11,7 +11,7 @@
 <script lang="ts">
 
 export default {
-  name: 'Confirm',
+  name: 'ConfirmWindow',
   props: {
     id: {
       type: String,

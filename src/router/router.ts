@@ -1,5 +1,5 @@
 import NoteList from '@/components/NoteList.vue';
-import Note from '@/components/Note.vue';
+import NotePage from '@/components/NotePage.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
 export const routes = [
@@ -9,7 +9,7 @@ export const routes = [
   },
   {
     path: '/:id',
-    component: Note,
+    component: NotePage,
   },
 ]
 
